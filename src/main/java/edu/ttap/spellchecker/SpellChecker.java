@@ -102,6 +102,12 @@ public class SpellChecker {
         }
     }
 
+    /**
+     * Checks if the trie, starting from the given node, contains the remaining characters to be processed
+     * @param curNode the node to start scanning the trie from
+     * @param remaining the characters to look for in the remaining parts of the trie
+     * @return true if the remaining characters were in the trie, and that the last one ended a word
+     */
     private boolean hasWord(Node curNode, String remaining) {
         char[] remains = remaining.toCharArray();
         for(char ch : remains) {
@@ -196,7 +202,10 @@ public class SpellChecker {
         }
         List<String> otherEndings = new ArrayList<>();
         for(Node n : curNode.children) {
-            otherEndings.add(word + n.getLetter());
+            String candidate = word + n.getLetter();
+            if(word != candidate) {
+                otherEndings.add(candidate);
+            }
         }
         return otherEndings;
     }
