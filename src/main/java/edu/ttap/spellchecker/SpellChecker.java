@@ -178,32 +178,27 @@ public class SpellChecker {
 
     /**
      * Returns a list of all words in the dictionary that can be formed by changing
-     * a single character in the given word.
+     * a single character at the end of the given word.
      * @param word the word to correct
      * @return a list of all possible corrections
      */
     public List<String> getOneCharEndCorrections(String word) {
-        char[] path = word.toCharArray();
+        if(word.equals("")) {
+            return new ArrayList<String>();
+        }
+        char[] wordArray = Arrays.copyOfRange(word.toCharArray(), 1, word.length());
         Node curNode = root;
-        List<String> corrections = new ArrayList<>();
-        for(int i = 0; i < path.length; i++) {
-            char ch = path[i];
-            Node newNode = curNode.getChild(ch);    
-            for(Node n : curNode.children) {
-                if( n.getLetter() != ch &&
-                    hasWord(n, new String(Arrays.copyOfRange(path, i + 1, path.length)))) { 
-                        String 
-                //TODO: add the paths that pass this check to the list
-                //TODO: stop strings from appearing multiple times DONE (I think)
-                }
-            }
-            if(newNode == null) {
-                break;
-            } else {
-                curNode = newNode;
+        for(int i = 0; i < wordArray.length; i++) {
+            curNode = curNode.getChild(wordArray[i]);
+            if(curNode == null) {
+                return new ArrayList<String>();
             }
         }
-        return null;
+        List<String> otherEndings = new ArrayList<>();
+        for(Node n : curNode.children) {
+            otherEndings.add(word + n.getLetter());
+        }
+        return otherEndings;
     }
 
     /**
