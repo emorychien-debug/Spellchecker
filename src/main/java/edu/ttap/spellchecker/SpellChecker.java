@@ -5,6 +5,7 @@ import java.lang.invoke.WrongMethodTypeException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -100,6 +101,19 @@ public class SpellChecker {
             }
         }
     }
+
+    private boolean hasWord(Node curNode, String remaining) {
+        char[] remains = remaining.toCharArray();
+        for(char ch : remains) {
+            Node nextNode = curNode.getChild(ch);
+            if(nextNode == null) {
+                return false;
+            } else {
+                curNode = nextNode;
+            }
+        }
+        return curNode.isWord();
+    }
     
     /**
      * Constructs a SpellChecker over the given dictionary.
@@ -124,6 +138,7 @@ public class SpellChecker {
      * Checks if the given word is in the dictionary.
      * @param word the word to check
      * @return true if the word is in the dictionary, false otherwise
+     * TODO: check this on the MathLAN machines
      */
     public boolean isWord(String word) {
         char[] wordArray = word.toCharArray();
@@ -142,6 +157,7 @@ public class SpellChecker {
      * adding a single character to the end of the given word.
      * @param word the word to complete
      * @return a list of all possible completions
+     * TODO: Check this on the MathLAN machines
      */
     public List<String> getOneCharCompletions(String word) {
         char[] wordArray = word.toCharArray();
@@ -167,7 +183,26 @@ public class SpellChecker {
      * @return a list of all possible corrections
      */
     public List<String> getOneCharEndCorrections(String word) {
-        // TODO: implement me!
+        char[] path = word.toCharArray();
+        Node curNode = root;
+        List<String> corrections = new ArrayList<>();
+        for(int i = 0; i < path.length; i++) {
+            char ch = path[i];
+            Node newNode = curNode.getChild(ch);    
+            for(Node n : curNode.children) {
+                if( n.getLetter() != ch &&
+                    hasWord(n, new String(Arrays.copyOfRange(path, i + 1, path.length)))) { 
+                        String 
+                //TODO: add the paths that pass this check to the list
+                //TODO: stop strings from appearing multiple times DONE (I think)
+                }
+            }
+            if(newNode == null) {
+                break;
+            } else {
+                curNode = newNode;
+            }
+        }
         return null;
     }
 
