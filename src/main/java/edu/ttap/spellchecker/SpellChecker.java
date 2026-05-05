@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,38 +36,43 @@ public class SpellChecker {
             letter = ch;
             this.isWord = isWord;
         }
+        
         public Node(char ch, boolean isWord) {
             this(ch, new ArrayList<>(), isWord);
         }
+
+        /**
+         * Adds a given node as a child
+         * @param n the new node to be added as a child
+         * @return false if a node with the same character is already added
+         */
         public boolean addNode(Node n) {
-            for(Node cur: children) {
-                if(n.getLetter() == cur.getLetter()) {
+            for (Node cur: children) {
+                if (n.getLetter() == cur.getLetter()) {
                     return false;
                 }
             }
             children.add(n);
             return true;
         }
-        public boolean isWord(){
-            return isWord;
-        }
-        public void setWord() {
-            isWord = true;
-        }
-        public char getLetter() {
-            return letter;
-        }
+
+        // I know that there's checkstyle errors here, please don't make me expand these
+        public boolean isWord(){ return isWord; }
+        public void setWord() { isWord = true; }
+        public char getLetter() { return letter; }
+
         public Node getChild(char ch) {
-            for(int i = 0; i < children.size(); i++) {
-                if(children.get(i).getLetter() == ch) {
+            for (int i = 0; i < children.size(); i++) {
+                if (children.get(i).getLetter() == ch) {
                     return children.get(i);
                 }
             }
             return null;
         }
+
         public boolean hasChild(char ch) {
-            for(Node n: children) {
-                if(n.getLetter() == ch) {
+            for (Node n: children) {
+                if (n.getLetter() == ch) {
                     return true;
                 }
             }
@@ -86,32 +90,32 @@ public class SpellChecker {
     private void addWord(String word) {
         char[] wordArray = word.toCharArray();
         Node curNode = root;
-        for(int i = 0; i < wordArray.length; i++) {
+        for (int i = 0; i < wordArray.length; i++) {
             Node newestNode = curNode.getChild(wordArray[i]);
-            if(newestNode != null) {
+            if (newestNode != null) {
                 curNode = newestNode;
             } else {
                 newestNode = new Node(wordArray[i], new ArrayList<>(), false);
                 curNode.addNode(newestNode);
                 curNode = newestNode;
             }
-            if(i == wordArray.length - 1) {
+            if (i == wordArray.length - 1) {
                 curNode.setWord();
             }
         }
     }
 
     /**
-     * Checks if the trie, starting from the given node, contains the remaining characters to be processed
+     * Checks if the trie, starting from the given node, contains the given characters
      * @param curNode the node to start scanning the trie from
      * @param remaining the characters to look for in the remaining parts of the trie
      * @return true if the remaining characters were in the trie, and that the last one ended a word
      */
     private boolean hasWord(Node curNode, String remaining) {
         char[] remains = remaining.toCharArray();
-        for(char ch : remains) {
+        for (char ch : remains) {
             Node nextNode = curNode.getChild(ch);
-            if(nextNode == null) {
+            if (nextNode == null) {
                 return false;
             } else {
                 curNode = nextNode;
@@ -126,7 +130,7 @@ public class SpellChecker {
      */
     public SpellChecker(List<String> dict) {
         root = new Node('\0', new ArrayList<>(), false);
-        for(String word : dict) {
+        for (String word : dict) {
             addWord(word);
         }
     }
@@ -148,9 +152,9 @@ public class SpellChecker {
     public boolean isWord(String word) {
         char[] wordArray = word.toCharArray();
         Node curNode = root;
-        for(char ch: wordArray) {
+        for (char ch: wordArray) {
             curNode = curNode.getChild(ch);
-            if(curNode == null) {
+            if (curNode == null) {
                 return false;
             }
         }
@@ -167,14 +171,14 @@ public class SpellChecker {
     public List<String> getOneCharCompletions(String word) {
         char[] wordArray = word.toCharArray();
         Node curNode = root;
-        for(int i = 0; i < wordArray.length; i++) {
+        for (int i = 0; i < wordArray.length; i++) {
             curNode = curNode.getChild(wordArray[i]);
-            if(curNode == null) {
+            if (curNode == null) {
                 return new ArrayList<>();
             }
         }
         List<String> otherEndings = new ArrayList<>();
-        for(Node n : curNode.children) {
+        for (Node n : curNode.children) {
             otherEndings.add(word + n.getLetter());
         }
         return otherEndings;
@@ -188,21 +192,22 @@ public class SpellChecker {
      * @return a list of all possible corrections
      */
     public List<String> getOneCharEndCorrections(String word) {
-        if(word.equals("")) {
+        if (word.length() == 0) {
             return new ArrayList<>();
         }
-        char[] wordArray = Arrays.copyOfRange(word.toCharArray(), 0, word.length() - 1);
+        String shortWord = word.substring(0, word.length() - 1);
+        char[] wordArray = shortWord.toCharArray();
         Node curNode = root;
-        for(int i = 0; i < wordArray.length; i++) {
-            curNode = curNode.getChild(wordArray[i]);
+        for (char ch : wordArray) {
+            curNode = curNode.getChild(ch);
             if (curNode == null) {
                 return new ArrayList<>();
             }
         }
         List<String> otherEndings = new ArrayList<>();
-        for(Node n : curNode.children) {
-            String candidate = word + n.getLetter();
-            if(!word.equals(candidate) || !n.isWord()) {
+        for (Node n : curNode.children) {
+            String candidate = shortWord + n.getLetter();
+            if (!word.equals(candidate) && n.isWord()) {
                 otherEndings.add(candidate);
             }
         }

@@ -99,14 +99,22 @@ public class ExampleTests {
         words.add("thine");
         SpellChecker dictionary = new SpellChecker(words);
 
-        List<String> thisReps = dictionary.getOneCharCorrections("this");
+        List<String> thisReps = dictionary.getOneCharEndCorrections("this");
         assertEquals(thisReps.size(), 1);
         assertEquals(thisReps.get(0), "thin");
         
-        List<String> thinyReps = dictionary.getOneCharCorrections("thiny");
+        List<String> thinyReps = dictionary.getOneCharEndCorrections("thiny");
         assertEquals(thinyReps.size(), 4);
 
-        List<String> thingsReps = dictionary.getOneCharCorrections("things");
-        assertEquals(thingsReps.size(), 1);;
+        List<String> thingsReps = dictionary.getOneCharEndCorrections("things");
+        assertEquals(thingsReps.size(), 1);
+    }
+
+    private List<String> returnEmptyList() {
+        return new ArrayList<>();
+    }
+    @Test
+    public void basicTest() {
+        int l = returnEmptyList().size();
     }
 }
