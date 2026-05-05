@@ -1,7 +1,6 @@
 package edu.ttap.spellchecker;
 
 import java.io.IOException;
-import java.lang.invoke.WrongMethodTypeException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class SpellChecker {
             this.isWord = isWord;
         }
         public Node(char ch, boolean isWord) {
-            this(ch, new ArrayList<Node>(), isWord);
+            this(ch, new ArrayList<>(), isWord);
         }
         public boolean addNode(Node n) {
             for(Node cur: children) {
@@ -92,7 +91,7 @@ public class SpellChecker {
             if(newestNode != null) {
                 curNode = newestNode;
             } else {
-                newestNode = new Node(wordArray[i], new ArrayList<Node>(), false);
+                newestNode = new Node(wordArray[i], new ArrayList<>(), false);
                 curNode.addNode(newestNode);
                 curNode = newestNode;
             }
@@ -171,7 +170,7 @@ public class SpellChecker {
         for(int i = 0; i < wordArray.length; i++) {
             curNode = curNode.getChild(wordArray[i]);
             if(curNode == null) {
-                return new ArrayList<String>();
+                return new ArrayList<>();
             }
         }
         List<String> otherEndings = new ArrayList<>();
@@ -190,20 +189,20 @@ public class SpellChecker {
      */
     public List<String> getOneCharEndCorrections(String word) {
         if(word.equals("")) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
-        char[] wordArray = Arrays.copyOfRange(word.toCharArray(), 1, word.length());
+        char[] wordArray = Arrays.copyOfRange(word.toCharArray(), 0, word.length() - 1);
         Node curNode = root;
         for(int i = 0; i < wordArray.length; i++) {
             curNode = curNode.getChild(wordArray[i]);
-            if(curNode == null) {
-                return new ArrayList<String>();
+            if (curNode == null) {
+                return new ArrayList<>();
             }
         }
         List<String> otherEndings = new ArrayList<>();
         for(Node n : curNode.children) {
             String candidate = word + n.getLetter();
-            if(word != candidate) {
+            if(!word.equals(candidate) || !n.isWord()) {
                 otherEndings.add(candidate);
             }
         }
@@ -217,7 +216,6 @@ public class SpellChecker {
     * @return a list of all possible corrections
     */
     public List<String> getOneCharCorrections(String word) {
-        // TODO: implement me!
         return null;
     }
 
